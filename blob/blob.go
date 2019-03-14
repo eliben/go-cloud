@@ -38,9 +38,8 @@
 // multiple Cloud providers. You may find http://github.com/google/wire useful
 // for managing your initialization code.
 //
-// Alternatively, you can construct a *Bucket using blob.OpenBucket by providing
-// a URL that's supported by a blob subpackage that you have linked
-// in to your application.
+// Alternatively, you can construct a *Bucket via a URL and OpenBucket.
+// See https://godoc.org/gocloud.dev#hdr-URLs for more information.
 //
 //
 // Errors
@@ -151,7 +150,7 @@ func (r *Reader) Size() int64 {
 }
 
 // As converts i to provider-specific types.
-// See https://godoc.org/gocloud.dev#As for background information, the "As"
+// See https://godoc.org/gocloud.dev#hdr-As for background information, the "As"
 // examples in this package for examples, and the provider-specific package
 // documentation for the specific types supported for that provider.
 func (r *Reader) As(i interface{}) bool {
@@ -195,7 +194,7 @@ type Attributes struct {
 }
 
 // As converts i to provider-specific types.
-// See https://godoc.org/gocloud.dev#As for background information, the "As"
+// See https://godoc.org/gocloud.dev#hdr-As for background information, the "As"
 // examples in this package for examples, and the provider-specific package
 // documentation for the specific types supported for that provider.
 func (a *Attributes) As(i interface{}) bool {
@@ -342,7 +341,7 @@ type ListOptions struct {
 	// BeforeList is a callback that will be called before each call to the
 	// the underlying provider's list functionality.
 	// asFunc converts its argument to provider-specific types.
-	// See https://godoc.org/gocloud.dev#As for background information.
+	// See https://godoc.org/gocloud.dev#hdr-As for background information.
 	BeforeList func(asFunc func(interface{}) bool) error
 }
 
@@ -414,7 +413,7 @@ type ListObject struct {
 }
 
 // As converts i to provider-specific types.
-// See https://godoc.org/gocloud.dev#As for background information, the "As"
+// See https://godoc.org/gocloud.dev#hdr-As for background information, the "As"
 // examples in this package for examples, and the provider-specific package
 // documentation for the specific types supported for that provider.
 func (o *ListObject) As(i interface{}) bool {
@@ -485,7 +484,7 @@ func newBucket(b driver.Bucket) *Bucket {
 }
 
 // As converts i to provider-specific types.
-// See https://godoc.org/gocloud.dev#As for background information, the "As"
+// See https://godoc.org/gocloud.dev#hdr-As for background information, the "As"
 // examples in this package for examples, and the provider-specific package
 // documentation for the specific types supported for that provider.
 func (b *Bucket) As(i interface{}) bool {
@@ -498,7 +497,7 @@ func (b *Bucket) As(i interface{}) bool {
 // ErrorAs converts err to provider-specific types.
 // ErrorAs panics if i is nil or not a pointer.
 // ErrorAs returns false if err == nil.
-// See https://godoc.org/gocloud.dev#As for background information.
+// See https://godoc.org/gocloud.dev#hdr-As for background information.
 func (b *Bucket) ErrorAs(err error, i interface{}) bool {
 	return gcerr.ErrorAs(err, i, b.b.ErrorAs)
 }
@@ -903,7 +902,7 @@ type WriterOptions struct {
 	// sending an upload request.
 	//
 	// asFunc converts its argument to provider-specific types.
-	// See https://godoc.org/gocloud.dev#As for background information.
+	// See https://godoc.org/gocloud.dev#hdr-As for background information.
 	BeforeWrite func(asFunc func(interface{}) bool) error
 }
 
@@ -919,6 +918,7 @@ type BucketURLOpener interface {
 // URLMux is a URL opener multiplexer. It matches the scheme of the URLs
 // against a set of registered schemes and calls the opener that matches the
 // URL's scheme.
+// See https://godoc.org/gocloud.dev#hdr-URLs for more information.
 //
 // The zero value is a multiplexer with no registered schemes.
 type URLMux struct {
@@ -960,12 +960,10 @@ func DefaultURLMux() *URLMux {
 	return defaultURLMux
 }
 
-// OpenBucket opens the bucket identified by the URL given. URL openers must be
-// registered in the DefaultURLMux, which is typically done in driver
-// packages' initialization.
-//
-// See the URLOpener documentation in provider-specific subpackages for more
-// details on supported scheme(s) and URL parameter(s).
+// OpenBucket opens the bucket identified by the URL given.
+// See the URLOpener documentation in provider-specific subpackages for
+// details on supported URL formats, and https://godoc.org/gocloud.dev#hdr-URLs
+// for more information.
 func OpenBucket(ctx context.Context, urlstr string) (*Bucket, error) {
 	return defaultURLMux.OpenBucket(ctx, urlstr)
 }

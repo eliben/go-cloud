@@ -107,14 +107,18 @@ func main() {
 	defer cleanup()
 
 	// Set up URL routes.
-	r := mux.NewRouter()
+	r := app.srv.Handler
+	// r := mux.NewRouter()
+
+	// these all error, saying http.Handler has no method
+	// so is the mux.NewRouter actually getting injected?
 	r.HandleFunc("/", app.index)
 	r.HandleFunc("/sign", app.sign)
 	r.HandleFunc("/blob/{key:.+}", app.serveBlob)
 
 	// Listen and serve HTTP.
 	log.Printf("Running, connected to %q cloud", envFlag)
-	log.Fatal(app.srv.ListenAndServe(*addr, r))
+	log.Fatal(app.srv.ListenAndServe(*addr))
 }
 
 // applicationSet is the Wire provider set for the Guestbook application that
@@ -123,6 +127,8 @@ var applicationSet = wire.NewSet(
 	newApplication,
 	appHealthChecks,
 	trace.AlwaysSample,
+	mux.NewRouter,
+	wire.Bind((*http.Handler)(nil), (*mux.Router)(nil)),
 )
 
 // application is the main server struct for Guestbook. It contains the state of
